@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["node"],
     "baseUrl": ".",
     "target": "esnext",
     "module": "nodenext",
@@ -9,8 +10,8 @@
     "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "ignoreDeprecations": "6.0"
+    "ignoreDeprecations": "6.0",
   },
   "include": ["./src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
