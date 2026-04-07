@@ -7,6 +7,10 @@ describe.each([
     expected: ["hello", "world"],
   },
   {
+    input: "hello there my man",
+    expected: ["hello", "there", "my", "man"],
+  },
+  {
     input: "  pokémons is really cute man  ",
     expected: ["pokémons", "is", "really", "cute", "man"],
   },
