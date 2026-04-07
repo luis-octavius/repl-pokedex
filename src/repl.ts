@@ -1,5 +1,6 @@
 import { createInterface } from "node:readline";
 import { stdin, stdout } from "node:process";
+import { CLICommand, getCommands } from "./commands.js";
 
 export function startREPL() {
   const rl = createInterface({
@@ -8,16 +9,28 @@ export function startREPL() {
     prompt: "Pokedex > ",
   });
 
+  const commands: Record<string, CLICommand> = getCommands();
+
   rl.prompt();
 
-  rl.on("line", (input) => {
-    const cleaned = cleanInput(input);
+  rl.on("line", async (input) => {
+    const words = cleanInput(input);
 
-    if (input.length === 0) {
+    if (words.length === 0) {
       rl.prompt();
-    } else {
-      console.log(`Your command was: ${cleaned[0]}`);
+      return;
     }
+
+    const commandName = words[0];
+
+    for (const [name, callback] of Object.entries(commands)) {
+      if (name === commandName) {
+        callback.callback(commands);
+        return;
+      }
+    }
+
+    rl.prompt();
   });
 }
 
