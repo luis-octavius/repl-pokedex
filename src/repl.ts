@@ -17,12 +17,7 @@ export async function startREPL(state: State) {
     for (const [name, callback] of Object.entries(state.commands)) {
       if (name === commandName) {
         try {
-          if (name === "explore") {
-            await callback.callback(state, words[1])
-            continue;
-          }
-          
-          await callback.callback(state)
+          await callback.callback(state, words[1])
 
         } catch (err) {
           console.error((err as Error).message);

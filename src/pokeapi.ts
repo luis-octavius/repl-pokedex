@@ -1,26 +1,6 @@
 import { Cache } from './pokecache.js';
-import { Location, ShallowLocations, TargetLocation } from './types.js';
+import { Location, ShallowLocations, TargetLocation, PokemonInfo } from './types.js';
 
-export type ShallowLocations = {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Result[];
-};
-
-export interface Result {
-  name: string;
-  url: string;
-}
-
-export interface Location {
-  areas: Area[];
-  game_indices: Index[];
-  id: number;
-  name: string;
-  names: Name[];
-  region: Region;
-}
 export class PokeAPI {
   private static readonly baseURL = "https://pokeapi.co/api/v2";
   #cache = new Cache(10000);
@@ -43,7 +23,7 @@ export class PokeAPI {
     try {
       const response = await fetch(pageURL);
       if (!response.ok) {
-        throw new Error(`Response Status: ${response.status}`);
+        throw new Error(`${response.status}: ${response.statusText}`);
       }
 
       const result = await response.json();
@@ -66,7 +46,7 @@ export class PokeAPI {
     try {
       const response = await fetch(locationURL);
       if (!response.ok) {
-        throw new Error(`Response Status: ${response.status}`);
+        throw new Error(`${response.status}: ${response.statusText}`);
       }
 
       const result = await response.json();
@@ -89,7 +69,7 @@ export class PokeAPI {
     try {
       const response = await fetch(locationURL);
       if (!response.ok) {
-        throw new Error(`Response Status: ${response.status}`)
+        throw new Error(`${response.status}: ${response.statusText}`);
       }
 
       const result = await response.json();
@@ -97,6 +77,29 @@ export class PokeAPI {
       return result;
     } catch (err) {
       console.error((err as Error).message);
+      throw err;
+    }
+  }
+
+  async fetchPokemon(pokemonName: string): Promise<PokemonInfo> {
+    const pokemonURL = `${PokeAPI.baseURL}/pokemon/${pokemonName}`;
+
+    let cacheEntry = this.#cache.get(pokemonURL);
+    if (cacheEntry) {
+      return Promise.resolve(cacheEntry as PokemonInfo);
+    }
+
+    try{
+      const response = await fetch(pokemonURL);
+      if (!response.ok) {
+        throw new Error(`${response.status}: ${response.statusText}`);
+      }
+
+      const pokemonInfo = await response.json();
+      this.#cache.add(pokemonURL, pokemonInfo);
+      return pokemonInfo;
+    } catch(err) {
+      console.error((err as Error).message)
       throw err;
     }
   }
