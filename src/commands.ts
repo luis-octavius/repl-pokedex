@@ -1,11 +1,8 @@
-import { commandExit } from "./command_exit.js"
-import { commandHelp } from "./command_help.js"
-
-export type CLICommand = {
-  name: string;
-  description: string;
-  callback: (commands: Record<string, CLICommand>) => void;
-}
+import { commandExit } from "./command_exit.js";
+import { commandHelp } from "./command_help.js";
+import { commandMap } from "./command_map.js";
+import { commandMapb } from "./command_mapb.js";
+import { type CLICommand } from "./state.js";
 
 export function getCommands(): Record<string, CLICommand> {
   return {
@@ -18,7 +15,16 @@ export function getCommands(): Record<string, CLICommand> {
       name: "help",
       description: "Shows help",
       callback: commandHelp,
-    }
-  }
+    },
+    map: {
+      name: "map",
+      description: "Shows the next location areas",
+      callback: commandMap,
+    },
+    mapb: {
+      name: "mapb",
+      description: "Shows the previous location areas",
+      callback: commandMapb,
+    },
+  };
 }
-

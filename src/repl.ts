@@ -1,36 +1,30 @@
-import { createInterface } from "node:readline";
-import { stdin, stdout } from "node:process";
-import { CLICommand, getCommands } from "./commands.js";
+import { type State } from "./state.js";
 
-export function startREPL() {
-  const rl = createInterface({
-    input: stdin,
-    output: stdout,
-    prompt: "Pokedex > ",
-  });
+export async function startREPL(state: State) {
+  state.read.prompt();
 
-  const commands: Record<string, CLICommand> = getCommands();
-
-  rl.prompt();
-
-  rl.on("line", async (input) => {
+  state.read.on("line", async (input) => {
     const words = cleanInput(input);
 
     if (words.length === 0) {
-      rl.prompt();
+      state.read.prompt();
       return;
     }
 
     const commandName = words[0];
 
-    for (const [name, callback] of Object.entries(commands)) {
+    for (const [name, callback] of Object.entries(state.commands)) {
       if (name === commandName) {
-        callback.callback(commands);
-        return;
+        try {
+          await callback.callback(state);
+        } catch (err) {
+          console.error((err as Error).message);
+          return;
+        }
       }
     }
 
-    rl.prompt();
+    state.read.prompt();
   });
 }
 
