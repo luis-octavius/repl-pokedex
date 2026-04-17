@@ -9,14 +9,21 @@ export async function startREPL(state: State) {
     if (words.length === 0) {
       state.read.prompt();
       return;
-    }
+    } 
 
     const commandName = words[0];
+
 
     for (const [name, callback] of Object.entries(state.commands)) {
       if (name === commandName) {
         try {
-          await callback.callback(state);
+          if (name === "explore") {
+            await callback.callback(state, words[1])
+            continue;
+          }
+          
+          await callback.callback(state)
+
         } catch (err) {
           console.error((err as Error).message);
           return;
